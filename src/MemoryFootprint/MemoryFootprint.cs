@@ -10,7 +10,7 @@ public static class ObjectExtensions
     [
         typeof(bool), typeof(byte), typeof(sbyte), typeof(char), typeof(decimal), typeof(double), typeof(float),
         typeof(int), typeof(uint), typeof(long), typeof(ulong), typeof(short), typeof(ushort), typeof(IntPtr),
-        typeof(UIntPtr), typeof(string)
+        typeof(UIntPtr)
     ];
 
     public static long MemoryFootprint(this object? obj)
@@ -20,6 +20,9 @@ public static class ObjectExtensions
 
         // Stack is used to detect cyclic references
         var stack = new HashSet<object>(new ReferenceEqualityComparer());
+
+        // Clear the hash codes used by the ReferenceEqualityComparer, otherwise the hash codes will leak memory over multiple calls
+        ReferenceEqualityComparer.HashCodes = [];
 
         return MemoryFootprint(obj, visited, stack);
     }
@@ -101,7 +104,7 @@ public static class ObjectExtensions
     private sealed class ReferenceEqualityComparer : IEqualityComparer<object>
     {
         // Static so that the two comparers share the same hash codes
-        private static readonly Dictionary<object, int> _hashCodes = [];
+        public static Dictionary<object, int> HashCodes { get; set; } = default!;
 
         public new bool Equals(object? x, object? y)
         {
@@ -110,10 +113,10 @@ public static class ObjectExtensions
 
         public int GetHashCode(object obj)
         {
-            if (!_hashCodes.TryGetValue(obj, out var value))
+            if (!HashCodes.TryGetValue(obj, out var value))
             {
                 value = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(obj);
-                _hashCodes[obj] = value;
+                HashCodes[obj] = value;
             }
             return value;
         }
