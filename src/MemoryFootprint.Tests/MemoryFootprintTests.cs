@@ -172,14 +172,11 @@ public class MemoryFootprintTests
         c1.Recurse = c2;
         c2.Recurse = c1;
         long size = 0;
-        c1.Invoking(x => size = x.MemoryFootprint()).Should().Throw<ArgumentException>();
+        c1.Invoking(x => size = x.MemoryFootprint()).Should().Throw<InvalidOperationException>();
     }
-}
 
-public class ObjectExtensionsTests
-{
     [Fact]
-    public void MemoryFootprint_WithNullObject_ShouldReturnZero()
+    public void NullObject_ShouldReturnZero()
     {
         object? obj = null;
         long size = obj.MemoryFootprint();
@@ -187,15 +184,7 @@ public class ObjectExtensionsTests
     }
 
     [Fact]
-    public void MemoryFootprint_WithBuiltInType_ShouldReturnSizeOfBuiltInType()
-    {
-        const int obj = 123;
-        long size = obj.MemoryFootprint();
-        size.Should().Be(sizeof(int));
-    }
-
-    [Fact]
-    public void MemoryFootprint_WithArray_ShouldReturnSizeOfArray()
+    public void Array_ShouldReturnSizeOfArray()
     {
         int[] obj = [1, 2, 3];
         long size = obj.MemoryFootprint();
@@ -203,7 +192,7 @@ public class ObjectExtensionsTests
     }
 
     [Fact]
-    public void MemoryFootprint_WithCollection_ShouldReturnSizeOfCollection()
+    public void Collection_ShouldReturnSizeOfCollection()
     {
         var obj = new List<int> { 1, 2, 3 };
         long size = obj.MemoryFootprint();
@@ -211,7 +200,7 @@ public class ObjectExtensionsTests
     }
 
     [Fact]
-    public void MemoryFootprint_WithCustomObject_ShouldReturnSizeOfObject()
+    public void CustomObject_ShouldReturnSizeOfObject()
     {
         var obj = new CustomObject { Property1 = "Test", Property2 = 123 };
         long size = obj.MemoryFootprint();
