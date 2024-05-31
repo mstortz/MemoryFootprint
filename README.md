@@ -1,5 +1,5 @@
 # MemoryFootprint
-An extension method to calculate the runtime memory consumption of an object.
+An extension method to approximate the runtime memory consumption of an object.
 
 I was suprised to find no existing method or popular library for this purpose, so I wrote one. The initial commit covers several cases, but I'm sure that there are many cases that it does not cover.
 
